@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login / Register</title>
+    <link
+        href='https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap'
+        rel='stylesheet'>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Arial', 'Helvetica Neue', sans-serif;
+            background-color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .page-wrapper {
+            width: 100%;
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 100px 0 50px;
+        }
+
+        .auth-card {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+        }
+
+        .card-heading {
+            padding: 20px 0;
+            background: #1a1a1a;
+            text-align: center;
+        }
+
+        .card-heading h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #fff;
+            text-transform: uppercase;
+        }
+
+        .card-body {
+            padding: 52px 85px 73px;
+        }
+
+        @media (max-width: 767px) {
+            .card-body {
+                padding: 40px 30px 50px;
+            }
+        }
+
+        /* Tab Switcher */
+        .tab-switcher {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 15px;
+            background: #e5e5e5;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .tab-btn.active {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        .tab-btn:hover {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        /* Forms */
+        .form-container {
+            display: none;
+        }
+
+        .form-container.active {
+            display: block;
+        }
+
+        .input-group-desc {
+            margin-bottom: 30px;
+        }
+
+        .label {
+            display: block;
+            color: #555;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .input--style-5 {
+            width: 100%;
+            background: #e5e5e5;
+            line-height: 50px;
+            border-radius: 5px;
+            padding: 0 22px;
+            font-size: 16px;
+            color: #555;
+            border: none;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .input--style-5:focus {
+            background: #d5d5d5;
+        }
+
+        /* Messages */
+        .error-message {
+            background: #ffe5e5;
+            color: #DC3545;
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+            border-left: 4px solid #DC3545;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            background: #e8f5e9;
+            color: #57b846;
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+            border-left: 4px solid #57b846;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* Button */
+        .btn {
+            display: inline-block;
+            width: 100%;
+            line-height: 50px;
+            padding: 0 50px;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            font-size: 15px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            border: none;
+            border-radius: 5px;
+            background: #dc3545;
+        }
+
+        .btn:hover {
+            background: #dc3545;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Forgot Password */
+        .forgot-password {
+            text-align: right;
+            margin-top: 15px;
+        }
+
+        .forgot-password a {
+            color: #dc3545;
+            font-size: 14px;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .forgot-password a:hover {
+            text-decoration: underline;
+        }
+
+        /* Additional Info */
+        .form-footer {
+            text-align: center;
+            margin-top: 25px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-footer a {
+            color: #4272d7;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .form-footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <div class="auth-card">
+            <div class="card-heading">
+                <h2 id="pageTitle">Welcome Back</h2>
+            </div>
+            <div class="card-body">
+                <!-- Tab Switcher -->
+                <div class="tab-switcher">
+                    <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+                    <button class="tab-btn" onclick="switchTab('register')">Register</button>
+                </div>
+
+                <!-- Error Message -->
+                <div class="error-message" id="errorMessage"></div>
+
+                <!-- Success Message -->
+                <div class="success-message" id="successMessage"></div>
+
+                <!-- Login Form -->
+                <div class="form-container active" id="loginForm">
+                    <form onsubmit="handleLogin(event)">
+                        <div class="input-group-desc">
+                            <label class="label">Email Address</label>
+                            <input class="input--style-5" type="email" id="loginEmail" placeholder="Enter your email"
+                                required>
+                        </div>
+                        <div class="input-group-desc">
+                            <label class="label">Password</label>
+                            <input class="input--style-5" type="password" id="loginPassword"
+                                placeholder="Enter your password" required>
+                        </div>
+                        <button type="submit" class="btn" id="loginBtn">Login</button>
+                        <div class="forgot-password">
+                            <a href="#" onclick="handleForgotPassword(event)">Forgot Password?</a>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Register Form -->
+                <div class="form-container" id="registerForm">
+                    <form onsubmit="handleRegister(event)">
+                        <div class="input-group-desc">
+                            <label class="label">Full Name</label>
+                            <input class="input--style-5" type="text" id="registerName"
+                                placeholder="Enter your full name" required>
+                        </div>
+                        <div class="input-group-desc">
+                            <label class="label">Email Address</label>
+                            <input class="input--style-5" type="email" id="registerEmail" placeholder="Enter your email"
+                                required>
+                        </div>
+                        <div class="input-group-desc">
+                            <label class="label">Phone Number</label>
+                            <input class="input--style-5" type="tel" id="registerPhone"
+                                placeholder="Enter your phone number" required>
+                        </div>
+                        <div class="input-group-desc">
+                            <label class="label">Password</label>
+                            <input class="input--style-5" type="password" id="registerPassword"
+                                placeholder="Create a password (min 6 characters)" required minlength="6">
+                        </div>
+                        <button type="submit" class="btn" id="registerBtn">Create Account</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        // Firebase configuration - REPLACE WITH YOUR OWN
+        // To get these values:
+        // 1. Go to https://console.firebase.google.com/
+        // 2. Create a new project or select existing
+        // 3. Go to Project Settings > General
+        // 4. Scroll down to "Your apps" and click "Web"
+        // 5. Copy the firebaseConfig object
+
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // IMPORTANT: Replace this with your Firebase config
+        const firebaseConfig = {
+
+            apiKey: "AIzaSyBsmjQbvCZl2vnuKcojBnzYNh7n9kx37W4",
+            authDomain: "consultway-51e30.firebaseapp.com",
+            projectId: "consultway-51e30",
+            storageBucket: "consultway-51e30.firebasestorage.app",
+            messagingSenderId: "289447780270",
+            appId: "1:289447780270:web:f9e64d963e2ef5bb00b23f",
+            measurementId: "G-DWMBZJKKXS"
+
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Make functions globally available
+        window.auth = auth;
+        window.db = db;
+        window.firebaseAuth = { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, sendPasswordResetEmail };
+        window.firestore = { doc, setDoc, getDoc };
+
+        // Check auth state on page load
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is already logged in, redirect to main page
+                // Uncomment the line below when integrating with your site
+                // window.location.href = 'index.html';
+            }
+        });
+    </script>
+
+    <script>
+        // Tab Switching
+        function switchTab(tab) {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const forms = document.querySelectorAll('.form-container');
+
+            tabs.forEach(t => t.classList.remove('active'));
+            forms.forEach(f => f.classList.remove('active'));
+
+            if (tab === 'login') {
+                tabs[0].classList.add('active');
+                document.getElementById('loginForm').classList.add('active');
+                document.getElementById('pageTitle').textContent = 'Welcome Back';
+            } else {
+                tabs[1].classList.add('active');
+                document.getElementById('registerForm').classList.add('active');
+                document.getElementById('pageTitle').textContent = 'Create Account';
+            }
+
+            clearMessages();
+        }
+
+        // Show Error Message
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            document.getElementById('successMessage').classList.remove('show');
+        }
+
+        // Show Success Message
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.add('show');
+            document.getElementById('errorMessage').classList.remove('show');
+        }
+
+        // Clear Messages
+        function clearMessages() {
+            document.getElementById('errorMessage').classList.remove('show');
+            document.getElementById('successMessage').classList.remove('show');
+        }
+
+        // Handle Login
+        async function handleLogin(event) {
+            event.preventDefault();
+            clearMessages();
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+
+            btn.disabled = true;
+            btn.textContent = 'Logging in...';
+
+            try {
+                const userCredential = await window.firebaseAuth.signInWithEmailAndPassword(window.auth, email, password);
+                const user = userCredential.user;
+
+                showSuccess('Login successful! Redirecting...');
+
+                setTimeout(() => {
+                    // Redirect to consultant page or booking page
+                    window.location.href = 'booking_timeslot.html'; // Change to your main page
+                }, 1500);
+
+            } catch (error) {
+                let errorMessage = 'Login failed. Please try again.';
+
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'No account found with this email.';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMessage = 'Incorrect password.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email address.';
+                } else if (error.code === 'auth/invalid-credential') {
+                    errorMessage = 'Invalid email or password.';
+                }
+
+                showError(errorMessage);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Login';
+            }
+        }
+
+        // Handle Register
+        async function handleRegister(event) {
+            event.preventDefault();
+            clearMessages();
+
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const phone = document.getElementById('registerPhone').value;
+            const password = document.getElementById('registerPassword').value;
+            const btn = document.getElementById('registerBtn');
+
+            btn.disabled = true;
+            btn.textContent = 'Creating Account...';
+
+            try {
+                // Create user in Firebase Auth
+                const userCredential = await window.firebaseAuth.createUserWithEmailAndPassword(window.auth, email, password);
+                const user = userCredential.user;
+
+                // Save additional user data to Firestore
+                await window.firestore.setDoc(window.firestore.doc(window.db, 'users', user.uid), {
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    role: 'user',
+                    createdAt: new Date().toISOString()
+                });
+
+                showSuccess('Account created successfully! Redirecting...');
+
+                setTimeout(() => {
+                    // Redirect to consultant page or booking page
+                    window.location.href = 'booking_timeslot.html'; // Change to your main page
+                }, 1500);
+
+            } catch (error) {
+                let errorMessage = 'Registration failed. Please try again.';
+
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'This email is already registered.';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorMessage = 'Invalid email address.';
+                } else if (error.code === 'auth/weak-password') {
+                    errorMessage = 'Password should be at least 6 characters.';
+                }
+
+                showError(errorMessage);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Create Account';
+            }
+        }
+
+        // Handle Forgot Password
+        async function handleForgotPassword(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+
+            if (!email) {
+                showError('Please enter your email address first.');
+                return;
+            }
+
+            try {
+                await window.firebaseAuth.sendPasswordResetEmail(window.auth, email);
+                showSuccess('Password reset email sent! Check your inbox.');
+            } catch (error) {
+                showError('Failed to send reset email. Please check your email address.');
+            }
+        }
+    </script>
+</body>
+
+</html>

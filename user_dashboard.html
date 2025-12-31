@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - ConsultWay</title>
+    <link
+        href='https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap'
+        rel='stylesheet'>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', 'Arial', 'Helvetica Neue', sans-serif;
+            background-color: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: #1a1a1a;
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #dc3545;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: #DC3545;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 30px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e5e5e5;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: none;
+            border: none;
+            font-family: 'Poppins', sans-serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            position: relative;
+            transition: color 0.3s;
+        }
+
+        .tab.active {
+            color: #dc3545;
+        }
+
+        .tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #dc3545;
+        }
+
+        /* Bookings Grid */
+        .bookings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .booking-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .booking-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .consultant-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .consultant-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #dc3545;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .consultant-details h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 3px;
+        }
+
+        .consultant-details p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-badge.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-badge.confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-badge.completed {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-badge.cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .booking-details {
+            border-top: 1px solid #e5e5e5;
+            padding-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+
+        .detail-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        .booking-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #c82333;
+        }
+
+        .btn-primary:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-danger {
+            background: #DC3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 10px;
+        }
+
+        .empty-state h3 {
+            font-size: 24px;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+
+        .empty-state p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .empty-state .btn {
+            display: inline-block;
+            width: auto;
+            padding: 12px 30px;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .loading::after {
+            content: 'Loading your bookings...';
+            font-size: 18px;
+            color: #666;
+        }
+
+        /* Messages */
+        .message {
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        @media (max-width: 768px) {
+            .bookings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            .booking-actions {
+                flex-direction: column;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">ConsultWay</div>
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <span id="userName">User</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1 class="page-title">My Bookings</h1>
+
+        <!-- Message -->
+        <div class="message" id="message"></div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="filterBookings('upcoming')">Upcoming</button>
+            <button class="tab" onclick="filterBookings('past')">Past</button>
+            <button class="tab" onclick="filterBookings('cancelled')">Cancelled</button>
+        </div>
+
+        <!-- Bookings Grid -->
+        <div id="bookingsContainer">
+            <div class="loading"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, query, where, getDocs, doc, getDoc, updateDoc, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBsmjQbvCZl2vnuKcojBnzYNh7n9kx37W4",
+            authDomain: "consultway-51e30.firebaseapp.com",
+            projectId: "consultway-51e30",
+            storageBucket: "consultway-51e30.firebasestorage.app",
+            messagingSenderId: "289447780270",
+            appId: "1:289447780270:web:f9e64d963e2ef5bb00b23f",
+            measurementId: "G-DWMBZJKKXS"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.auth = auth;
+        window.db = db;
+        window.firestore = { collection, query, where, getDocs, doc, getDoc, updateDoc, orderBy };
+
+        let currentUser = null;
+        let allBookings = [];
+
+        // Check authentication
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    document.getElementById('userName').textContent = userData.name || user.email;
+                    document.getElementById('userAvatar').textContent = (userData.name || user.email).charAt(0).toUpperCase();
+                }
+                loadBookings();
+            } else {
+                window.location.href = 'auth.html';
+            }
+        });
+    </script>
+
+    <script>
+        let currentFilter = 'upcoming';
+
+        // Load bookings from Firebase
+        async function loadBookings() {
+            const container = document.getElementById('bookingsContainer');
+            container.innerHTML = '<div class="loading"></div>';
+
+            try {
+                const bookingsRef = window.firestore.collection(window.db, 'bookings');
+                const q = window.firestore.query(
+                    bookingsRef,
+                    window.firestore.where('userId', '==', window.auth.currentUser.uid),
+                    window.firestore.orderBy('createdAt', 'desc')
+                );
+
+                const querySnapshot = await window.firestore.getDocs(q);
+                allBookings = [];
+
+                querySnapshot.forEach((doc) => {
+                    allBookings.push({
+                        id: doc.id,
+                        ...doc.data()
+                    });
+                });
+
+                console.log('Loaded bookings:', allBookings);
+                displayBookings(currentFilter);
+
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>Error Loading Bookings</h3>
+                        <p>Please refresh the page or try again later.</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Filter and display bookings
+        function filterBookings(filter) {
+            currentFilter = filter;
+
+            // Update tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            displayBookings(filter);
+        }
+
+        // Display bookings based on filter
+        function displayBookings(filter) {
+            const container = document.getElementById('bookingsContainer');
+            const now = new Date();
+
+            let filteredBookings = allBookings.filter(booking => {
+                const bookingDate = new Date(booking.date + 'T' + convertTo24Hour(booking.timeSlot));
+
+                if (filter === 'upcoming') {
+                    return bookingDate >= now && booking.status !== 'cancelled';
+                } else if (filter === 'past') {
+                    return bookingDate < now && booking.status !== 'cancelled';
+                } else if (filter === 'cancelled') {
+                    return booking.status === 'cancelled';
+                }
+                return true;
+            });
+
+            if (filteredBookings.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <h3>No ${filter} bookings</h3>
+                        <p>You don't have any ${filter} consultations yet.</p>
+                        <button class="btn btn-primary" onclick="window.location.href='index7.html'">
+                            Book a Consultation
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="bookings-grid">
+                    ${filteredBookings.map(booking => createBookingCard(booking)).join('')}
+                </div>
+            `;
+        }
+
+        // Create booking card HTML
+        function createBookingCard(booking) {
+            const bookingDate = new Date(booking.date + 'T' + convertTo24Hour(booking.timeSlot));
+            const now = new Date();
+            const canJoin = bookingDate <= now && bookingDate > new Date(now - 60 * 60 * 1000); // Can join 1 hour window
+            const isPast = bookingDate < now;
+
+            const initials = booking.consultantName.split(' ').map(n => n[0]).join('');
+            const statusClass = booking.status || 'pending';
+
+            return `
+                <div class="booking-card">
+                    <div class="booking-header">
+                        <div class="consultant-info">
+                            <div class="consultant-avatar">${initials}</div>
+                            <div class="consultant-details">
+                                <h3>${booking.consultantName}</h3>
+                                <p>${formatDate(booking.date)}</p>
+                            </div>
+                        </div>
+                        <span class="status-badge ${statusClass}">${statusClass}</span>
+                    </div>
+                    
+                    <div class="booking-details">
+                        <div class="detail-row">
+                            <span class="detail-icon">🕒</span>
+                            <span><strong>Time:</strong> ${booking.timeSlot}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-icon">💰</span>
+                            <span><strong>Amount:</strong> $8.00</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-icon">📋</span>
+                            <span><strong>Booking ID:</strong> ${booking.id.substring(0, 8)}...</span>
+                        </div>
+                    </div>
+                    
+                    <div class="booking-actions">
+                        ${canJoin && booking.status === 'confirmed' ? `
+                            <button class="btn btn-primary" onclick="joinCall('${booking.id}')">
+                                Join Video Call
+                            </button>
+                        ` : isPast ? `
+                            <button class="btn btn-secondary" disabled>
+                                Completed
+                            </button>
+                        ` : booking.status === 'cancelled' ? `
+                            <button class="btn btn-secondary" disabled>
+                                Cancelled
+                            </button>
+                        ` : `
+                            <button class="btn btn-primary" disabled>
+                                Join at ${booking.timeSlot}
+                            </button>
+                            <button class="btn btn-danger" onclick="cancelBooking('${booking.id}')">
+                                Cancel
+                            </button>
+                        `}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Join video call
+        function joinCall(bookingId) {
+            // Redirect to video call page with booking ID
+            window.location.href = `video/video.html?booking=${bookingId}`;
+        }
+
+        // Cancel booking
+        async function cancelBooking(bookingId) {
+            if (!confirm('Are you sure you want to cancel this booking?')) {
+                return;
+            }
+
+            try {
+                const bookingRef = window.firestore.doc(window.db, 'bookings', bookingId);
+                await window.firestore.updateDoc(bookingRef, {
+                    status: 'cancelled'
+                });
+
+                showMessage('Booking cancelled successfully', 'success');
+                loadBookings();
+            } catch (error) {
+                console.error('Error cancelling booking:', error);
+                showMessage('Failed to cancel booking', 'error');
+            }
+        }
+
+        // Helper function to convert 12-hour to 24-hour time
+        function convertTo24Hour(time12h) {
+            const [time, modifier] = time12h.split(' ');
+            let [hours, minutes] = time.split(':');
+
+            if (hours === '12') {
+                hours = modifier === 'AM' ? '00' : '12';
+            } else {
+                hours = modifier === 'PM' ? String(parseInt(hours, 10) + 12) : hours;
+            }
+
+            return `${hours.padStart(2, '0')}:${minutes}:00`;
+        }
+
+        // Format date for display
+        function formatDate(dateStr) {
+            const date = new Date(dateStr + 'T00:00:00');
+            return date.toLocaleDateString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+        }
+
+        // Show message
+        function showMessage(text, type) {
+            const message = document.getElementById('message');
+            message.textContent = text;
+            message.className = `message ${type} show`;
+            setTimeout(() => {
+                message.classList.remove('show');
+            }, 5000);
+        }
+
+        // Logout
+        async function logout() {
+            try {
+                await window.auth.signOut();
+                window.location.href = 'index.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+    </script>
+</body>
+
+</html>
