@@ -78,6 +78,15 @@
     }
 
     const booking = snap.data();
+    // ✅ If meetingId is missing, generate it from booking data
+let meetingId = booking.meetingId;
+
+if (!meetingId) {
+  const timeKey = booking.timeSlot.replace(":", "").replace(" ", ""); // "03:00 PM" -> "0300PM"
+  meetingId = `cw_${booking.consultantId}_${booking.date}_${timeKey}`;
+  console.log("Generated meetingId:", meetingId);
+}
+
 
     // ✅ IMPORTANT: meetingId must exist in booking doc
     const meetingId = booking.meetingId;
@@ -109,6 +118,7 @@
 
 
 </html>
+
 
 
 
