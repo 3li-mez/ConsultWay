@@ -368,9 +368,11 @@
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
   import {
     getFirestore,
+    doc,
     collection,
-    addDoc,
-    serverTimestamp
+    runTransaction,
+    serverTimestamp,
+    getDoc
   } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -387,16 +389,16 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // expose to window so your normal <script> can use it
+  // expose for your normal script
   window.auth = auth;
   window.db = db;
-  window.firestore = { collection, addDoc, serverTimestamp };
+  window.fs = { doc, collection, runTransaction, serverTimestamp, getDoc };
 
-  // If not logged in → go auth
   onAuthStateChanged(auth, (user) => {
     if (!user) window.location.href = "auth.html";
   });
 </script>
+
 
     <script>
         // Available time slots (9 AM - 5 PM)
@@ -470,7 +472,7 @@
         }
 
         // Load available time slots
-        function loadTimeSlots() {
+        async function loadTimeSlots() {
             console.log('Loading time slots for date:', selectedDate);
             const grid = document.getElementById('timeSlotsGrid');
 
@@ -480,49 +482,71 @@
             }
 
             try {
-                // Get today's info for disabling past slots
-                const today = new Date().toISOString().split('T')[0];
-                const isToday = selectedDate === today;
-                const currentHour = new Date().getHours();
+  // Get today's info for disabling past slots
+  const today = new Date().toISOString().split('T')[0];
+  const isToday = selectedDate === today;
+  const currentHour = new Date().getHours();
 
-                // For now, show all slots as available (Firebase integration comes later)
-                const bookedSlots = [];
+  // ✅ Load locked/booked slots from Firestore slotLocks
+  let bookedSlots = [];
+  try {
+    if (!window.db || !window.fs) {
+      bookedSlots = [];
+    } else {
+      const lockIds = timeSlots.map((slot) => {
+        const timeKey = normalizeTimeSlotId(slot);
+        return `${consultantId}_${selectedDate}_${timeKey}`;
+      });
 
-                // Render time slots
-                grid.innerHTML = '';
-                console.log('Rendering', timeSlots.length, 'time slots');
+      const snaps = await Promise.all(
+        lockIds.map((id) => window.fs.getDoc(window.fs.doc(window.db, "slotLocks", id)))
+      );
 
-                timeSlots.forEach(slot => {
-                    const slotDiv = document.createElement('div');
-                    slotDiv.className = 'time-slot';
-                    slotDiv.textContent = slot;
+      snaps.forEach((snap, i) => {
+        if (snap.exists()) bookedSlots.push(timeSlots[i]);
+      });
+    }
+  } catch (e) {
+    console.warn("⚠️ Could not load slotLocks, showing all slots as available:", e);
+    bookedSlots = [];
+  }
 
-                    const slotHour = parseInt(slot.split(':')[0]);
-                    const isPM = slot.includes('PM');
-                    const hour24 = isPM && slotHour !== 12 ? slotHour + 12 : (slotHour === 12 && !isPM ? 0 : slotHour);
+  // Render time slots
+  grid.innerHTML = '';
+  console.log('Rendering', timeSlots.length, 'time slots');
 
-                    // Disable past time slots for today
-                    if (isToday && hour24 <= currentHour) {
-                        slotDiv.classList.add('disabled');
-                    }
-                    // Mark booked slots
-                    else if (bookedSlots.includes(slot)) {
-                        slotDiv.classList.add('booked');
-                    }
-                    // Available slots
-                    else {
-                        slotDiv.addEventListener('click', () => selectTimeSlot(slot, slotDiv));
-                    }
+  timeSlots.forEach(slot => {
+    const slotDiv = document.createElement('div');
+    slotDiv.className = 'time-slot';
+    slotDiv.textContent = slot;
 
-                    grid.appendChild(slotDiv);
-                });
+    const slotHour = parseInt(slot.split(':')[0]);
+    const isPM = slot.includes('PM');
+    const hour24 = isPM && slotHour !== 12 ? slotHour + 12 : (slotHour === 12 && !isPM ? 0 : slotHour);
 
-                console.log('Time slots rendered successfully');
+    // Disable past time slots for today
+    if (isToday && hour24 <= currentHour) {
+      slotDiv.classList.add('disabled');
+    }
+    // Mark booked slots
+    else if (bookedSlots.includes(slot)) {
+      slotDiv.classList.add('booked');
+    }
+    // Available slots
+    else {
+      slotDiv.addEventListener('click', () => selectTimeSlot(slot, slotDiv));
+    }
 
-            } catch (error) {
-                console.error('Error loading time slots:', error);
-                showError('Error loading time slots. Please refresh the page.');
-            }
+    grid.appendChild(slotDiv);
+  });
+
+  console.log('Time slots rendered successfully');
+
+} catch (error) {
+  console.error('Error loading time slots:', error);
+  showError('Error loading time slots. Please refresh the page.');
+}
+
         }
 
         // Select time slot
@@ -564,61 +588,107 @@
 
         // Proceed to payment
         // Proceed to payment (CREATE booking in Firestore first)
+// Helper: normalize time slot into a stable doc id piece (no spaces/colon)
+function normalizeTimeSlotId(slot) {
+  // "09:00 AM" -> "0900AM"
+  return slot.replace(":", "").replace(" ", "");
+}
+
+// Proceed to payment (slot lock + booking create in ONE transaction)
 async function proceedToPayment() {
   if (!selectedDate || !selectedTime) {
-    showError('Please select a date and time slot.');
+    showError("Please select a date and time slot.");
     return;
   }
 
-  // Ensure auth ready
   const user = window.auth?.currentUser;
   if (!user) {
-    showError("You must be logged in to book.");
     window.location.href = "auth.html";
     return;
   }
 
-  const proceedBtn = document.getElementById('proceedBtn');
+  const proceedBtn = document.getElementById("proceedBtn");
   proceedBtn.disabled = true;
-  proceedBtn.textContent = 'Creating Booking...';
+  proceedBtn.textContent = "Locking Slot...";
 
   try {
-    // Build booking data
-    const bookingData = {
-      userId: user.uid,
-      consultantId: consultantId,
-      consultantName: consultantData.name,
-      date: selectedDate,
-      timeSlot: selectedTime,
-      status: 'pending',
-      paymentStatus: 'unpaid',
-      createdAt: window.firestore.serverTimestamp()
-    };
+    const timeKey = normalizeTimeSlotId(selectedTime);
+    const lockId = `${consultantId}_${selectedDate}_${timeKey}`;
 
-    // ✅ Create document in Firestore: bookings/{autoId}
-    const docRef = await window.firestore.addDoc(
-      window.firestore.collection(window.db, 'bookings'),
-      bookingData
+    // references
+    const lockRef = window.fs.doc(window.db, "slotLocks", lockId);
+    const bookingRef = window.fs.doc(window.fs.collection(window.db, "bookings")); // auto-id
+
+    // Transaction: if lock exists -> fail. else create lock + create booking.
+    await window.fs.runTransaction(window.db, async (tx) => {
+      const lockSnap = await tx.get(lockRef);
+
+      if (lockSnap.exists()) {
+        // Slot already locked/booked
+        throw new Error("SLOT_TAKEN");
+      }
+
+      // Create lock doc
+      tx.set(lockRef, {
+        consultantId,
+        date: selectedDate,
+        timeSlot: selectedTime,
+        bookingId: bookingRef.id,
+        userId: user.uid,
+        status: "locked",               // later you can set confirmed after payment if you want
+        createdAt: window.fs.serverTimestamp()
+      });
+
+      // Create booking doc
+      tx.set(bookingRef, {
+        userId: user.uid,
+        consultantId,
+        consultantName: consultantData.name,
+        date: selectedDate,
+        timeSlot: selectedTime,
+        status: "pending",
+        paymentStatus: "unpaid",
+        lockId,
+        createdAt: window.fs.serverTimestamp()
+      });
+    });
+
+    // Save booking info for next pages
+    sessionStorage.setItem("currentBookingId", bookingRef.id);
+    sessionStorage.setItem(
+      "bookingData",
+      JSON.stringify({
+        consultantId,
+        consultantName: consultantData.name,
+        date: selectedDate,
+        timeSlot: selectedTime,
+        status: "pending",
+        paymentStatus: "unpaid",
+        lockId
+      })
     );
 
-    // ✅ store locally for payment_result.html to update
-    sessionStorage.setItem('currentBookingId', docRef.id);
-    sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
-
-    showSuccess('Booking created! Redirecting to payment...');
-
-    // ✅ Go to payment page with booking ID
+    showSuccess("Slot locked! Redirecting to payment...");
     setTimeout(() => {
-      window.location.href = `payment_form.html?booking=${docRef.id}`;
+      window.location.href = `payment_form.html?booking=${bookingRef.id}`;
     }, 800);
 
   } catch (err) {
-    console.error("❌ Error creating booking:", err);
-    showError("Failed to create booking. Please try again.");
+    console.error("❌ Booking/Lock error:", err);
+
+    if (err?.message === "SLOT_TAKEN") {
+      showError("Sorry, this slot was just booked by someone else. Please select another time.");
+      // Reload slots to show booked state (we’ll enhance bookedSlots next)
+      loadTimeSlots();
+    } else {
+      showError("Failed to lock slot. Please try again.");
+    }
+
     proceedBtn.disabled = false;
-    proceedBtn.textContent = 'Proceed to Payment';
+    proceedBtn.textContent = "Proceed to Payment";
   }
 }
+
 
 
         // Show messages
