@@ -318,7 +318,46 @@
             </div>
         </div>
     </div>
+    <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
 
+    const firebaseConfig = {
+        apiKey: "AIzaSyBsmjQbvCZl2vnuKcojBnzYNh7n9kx37W4",
+        authDomain: "consultway-51e30.firebaseapp.com",
+        projectId: "consultway-51e30",
+        storageBucket: "consultway-51e30.firebasestorage.app",
+        messagingSenderId: "289447780270",
+        appId: "1:289447780270:web:f9e64d963e2ef5bb00b23f",
+        measurementId: "G-DWMBZJKKXS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    window.auth = auth;
+
+    // Check authentication
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            window.location.href = 'auth.html';
+        }
+    });
+</script>
+
+<script>
+    // Get booking ID from URL or session
+    const urlParams = new URLSearchParams(window.location.search);
+    const bookingId = urlParams.get('booking') || sessionStorage.getItem('currentBookingId');
+    
+    if (bookingId) {
+        sessionStorage.setItem('currentBookingId', bookingId);
+        console.log('Booking ID:', bookingId);
+    }
+
+    // Rest of your existing script code...
+    // (Keep all your existing code for card formatting, validation, etc.)
+</script>
     <script>
         // Format card number with spaces
         document.getElementById('cardNumber').addEventListener('input', function (e) {
@@ -378,25 +417,33 @@
             btn.textContent = 'Processing Payment...';
 
             // Simulate payment processing
-            setTimeout(() => {
-                // Randomly determine success (80% success rate for demo)
-                const isSuccessful = Math.random() > 0.2;
+            // Simulate payment processing
+    setTimeout(() => {
+        // Randomly determine success (80% success rate for demo)
+        const isSuccessful = Math.random() > 0.2;
 
-                // Store payment result and redirect
-                const paymentData = {
-                    success: isSuccessful,
-                    amount: '$104.00',
-                    transactionId: 'TXN' + Math.random().toString(36).substr(2, 9).toUpperCase(),
-                    date: new Date().toLocaleString(),
-                    cardLast4: cardNumber.slice(-4)
-                };
+        // Store payment result and redirect
+        const paymentData = {
+            success: isSuccessful,
+            amount: '$104.00',
+            transactionId: 'TXN' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+            date: new Date().toLocaleString(),
+            cardLast4: cardNumber.slice(-4)
+        };
 
-                // Store in sessionStorage
-                sessionStorage.setItem('paymentResult', JSON.stringify(paymentData));
+        // Store in sessionStorage
+        sessionStorage.setItem('paymentResult', JSON.stringify(paymentData));
+        
+        // ⭐ ADD THIS - Keep booking ID in session ⭐
+        const bookingId = sessionStorage.getItem('currentBookingId');
+        if (bookingId) {
+            sessionStorage.setItem('currentBookingId', bookingId);
+            console.log('Keeping booking ID for payment result:', bookingId);
+        }
 
-                // Redirect to result page
-                window.location.href = 'payment_result.html';
-            }, 2000);
+        // Redirect to result page
+        window.location.href = 'payment_result.html';
+    }, 2000);
         });
     </script>
 </body>
