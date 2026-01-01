@@ -645,7 +645,7 @@ async function proceedToPayment() {
         consultantId,
         date: selectedDate,
         timeSlot: selectedTime,
-          meetingId, 
+          meetingId: `cw_${consultantId}_${selectedDate}_${timeKey}`, 
         bookingId: bookingRef.id,
         userId: user.uid,
         status: "locked",               // later you can set confirmed after payment if you want
