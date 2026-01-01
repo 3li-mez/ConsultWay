@@ -13,7 +13,8 @@
  <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
   import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
 
   const firebaseConfig = {
     apiKey: "AIzaSyBsmjQbvCZl2vnuKcojBnzYNh7n9kx37W4",
@@ -34,7 +35,7 @@
     return slot.replace(":", "").replace(" ", "");
   }
 
-  function joinVideoSdk(meetingId, displayName) {
+  function joinVideoSdk(meetingId, displayName, bookingId) {
     console.log("✅ Joining meeting:", meetingId);
 
     const script = document.createElement("script");
@@ -55,7 +56,7 @@
         screenShareEnabled: true,
 
         participantCanLeave: true,
-        redirectOnLeave: "https://3li-mez.github.io/ConsultWay/feedback_page.html",
+        redirectOnLeave: `https://3li-mez.github.io/ConsultWay/feedback_page.html?booking=${bookingId}`,
       };
 
       const meeting = new VideoSDKMeeting();
@@ -89,14 +90,17 @@
     // ✅ Use meetingId if exists, otherwise generate it (so old bookings work)
     let meetingId = booking.meetingId;
     if (!meetingId) {
-      const timeKey = normalizeTimeSlotId(booking.timeSlot);
-      meetingId = `cw_${booking.consultantId}_${booking.date}_${timeKey}`;
-      console.log("Generated meetingId (missing in DB):", meetingId);
-    } else {
+  const timeKey = normalizeTimeSlotId(booking.timeSlot);
+  meetingId = `cw_${booking.consultantId}_${booking.date}_${timeKey}`;
+  console.log("Generated meetingId (missing in DB):", meetingId);
+
+  await updateDoc(doc(db, "bookings", bookingId), { meetingId });
+  console.log("✅ meetingId saved to booking:", meetingId);
+} else {
       console.log("meetingId from DB:", meetingId);
     }
 
-    joinVideoSdk(meetingId, user.email);
+    joinVideoSdk(meetingId, user.email, bookingId);
   }
 
   onAuthStateChanged(auth, async (user) => {
@@ -113,6 +117,7 @@
 
 
 </html>
+
 
 
 
