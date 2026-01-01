@@ -343,6 +343,9 @@
     </script>
 
     <script>
+        const params = new URLSearchParams(window.location.search);
+const redirectPage = params.get('redirect');
+const consultantId = params.get('consultant');
         // Tab Switching
         function switchTab(tab) {
             const tabs = document.querySelectorAll('.tab-btn');
@@ -405,9 +408,13 @@
                 showSuccess('Login successful! Redirecting...');
 
                 setTimeout(() => {
-                    // Redirect to consultant page or booking page
-                    window.location.href = 'booking_timeslot.html'; // Change to your main page
-                }, 1500);
+  if (redirectPage) {
+    window.location.href =
+      `${redirectPage}?consultant=${consultantId}`;
+  } else {
+    window.location.href = 'index.html';
+  }
+}, 1500);
 
             } catch (error) {
                 let errorMessage = 'Login failed. Please try again.';
@@ -460,9 +467,14 @@
                 showSuccess('Account created successfully! Redirecting...');
 
                 setTimeout(() => {
-                    // Redirect to consultant page or booking page
-                    window.location.href = 'booking_timeslot.html'; // Change to your main page
-                }, 1500);
+  if (redirectPage) {
+    window.location.href =
+      `${redirectPage}?consultant=${consultantId}`;
+  } else {
+    window.location.href = 'index.html';
+  }
+}, 1500);
+
 
             } catch (error) {
                 let errorMessage = 'Registration failed. Please try again.';
