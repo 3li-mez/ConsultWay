@@ -250,7 +250,7 @@
                     </div>
                     <div class="order-item">
                         <span>Total Amount</span>
-                        <span>$104.00</span>
+                        <span>$25.00</span>
                     </div>
                 </div>
 
@@ -294,20 +294,10 @@
                         </div>
                     </div>
 
-                    <div class="input-group-desc">
-                        <label class="label">Billing Address</label>
-                        <input class="input--style-5" type="text" id="billingAddress"
-                            placeholder="Enter your billing address" required>
-                    </div>
-
-                    <div class="input-group-desc">
-                        <label class="label">ZIP / Postal Code</label>
-                        <input class="input--style-5" type="text" id="zipCode"
-                            placeholder="Enter ZIP code" required>
-                    </div>
+                    
 
                     <button type="submit" class="btn" id="paymentBtn">
-                        Complete Payment - $104.00
+                        Complete Payment - $25.00
                     </button>
                 </form>
 
@@ -425,7 +415,7 @@
         // Store payment result and redirect
         const paymentData = {
             success: isSuccessful,
-            amount: '$104.00',
+            amount: '$25.00',
             transactionId: 'TXN' + Math.random().toString(36).substr(2, 9).toUpperCase(),
             date: new Date().toLocaleString(),
             cardLast4: cardNumber.slice(-4)
