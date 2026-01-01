@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Result</title>
-    <link href='https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap' rel='stylesheet'>
+    <title>Payment - Checkout</title>
+    <link
+        href='https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap'
+        rel='stylesheet'>
     <style>
         * {
             margin: 0;
@@ -24,108 +27,155 @@
 
         .page-wrapper {
             width: 100%;
-            max-width: 600px;
+            max-width: 680px;
             margin: 0 auto;
             padding: 50px 0;
         }
 
-        .result-card {
+        .payment-card {
             background: #fff;
             border-radius: 10px;
             box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.15);
             overflow: hidden;
+        }
+
+        .card-heading {
+            padding: 25px;
+            background: #1a1a1a;
             text-align: center;
         }
 
-        .result-header {
-            padding: 40px 30px 30px;
-        }
-
-        .icon-wrapper {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 25px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 50px;
-            animation: scaleIn 0.5s ease;
-        }
-
-        @keyframes scaleIn {
-            0% { transform: scale(0); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .success .icon-wrapper {
-            background: #e8f5e9;
-            color: #57b846;
-        }
-
-        .failed .icon-wrapper {
-            background: #ffe5e5;
-            color: #dc3545;
-        }
-
-        h1 {
-            font-size: 32px;
+        .card-heading h2 {
+            font-size: 24px;
             font-weight: 700;
-            margin-bottom: 15px;
+            color: #fff;
+            text-transform: uppercase;
+            margin-bottom: 5px;
         }
 
-        .success h1 {
-            color: #57b846;
+        .card-heading p {
+            color: #aaa;
+            font-size: 14px;
         }
 
-        .failed h1 {
-            color: #dc3545;
-        }
-
-        .subtitle {
-            font-size: 16px;
-            color: #666;
-            line-height: 1.6;
-        }
-
-        .result-body {
-            padding: 0 40px 40px;
+        .card-body {
+            padding: 40px 50px 50px;
         }
 
         @media (max-width: 767px) {
-            .result-body {
-                padding: 0 25px 30px;
+            .card-body {
+                padding: 30px 25px 40px;
             }
         }
 
-        .transaction-details {
+        .order-summary {
             background: #f8f9fa;
-            padding: 25px;
+            padding: 20px;
             border-radius: 8px;
             margin-bottom: 30px;
-            text-align: left;
         }
 
-        .detail-row {
+        .order-summary h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .order-item {
             display: flex;
             justify-content: space-between;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid #e0e0e0;
         }
 
-        .detail-row:last-child {
+        .order-item:last-child {
             border-bottom: none;
-        }
-
-        .detail-label {
             font-weight: 600;
-            color: #555;
+            font-size: 18px;
+            color: #dc3545;
+            padding-top: 15px;
+            margin-top: 10px;
+            border-top: 2px solid #dc3545;
         }
 
-        .detail-value {
-            color: #333;
-            font-weight: 500;
+        .input-group-desc {
+            margin-bottom: 25px;
+        }
+
+        .label {
+            display: block;
+            color: #555;
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .input--style-5 {
+            width: 100%;
+            background: #e5e5e5;
+            line-height: 50px;
+            border-radius: 5px;
+            padding: 0 22px;
+            font-size: 16px;
+            color: #555;
+            border: none;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .input--style-5:focus {
+            background: #d5d5d5;
+        }
+
+        .input-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 767px) {
+            .input-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card-icons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 32px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: #666;
+            border: 1px solid #ddd;
+        }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: #e8f5e9;
+            padding: 12px 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            font-size: 13px;
+            color: #2e7d32;
+        }
+
+        .secure-badge::before {
+            content: "🔒";
+            font-size: 16px;
         }
 
         .btn {
@@ -142,24 +192,16 @@
             font-family: 'Poppins', sans-serif;
             border: none;
             border-radius: 5px;
-            text-decoration: none;
-            margin-bottom: 15px;
-        }
-
-        .btn-primary {
             background: #dc3545;
         }
 
-        .btn-primary:hover {
+        .btn:hover {
             background: #c82333;
         }
 
-        .btn-secondary {
-            background: #6c757d;
-        }
-
-        .btn-secondary:hover {
-            background: #5a6268;
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
         }
 
         .disclaimer {
@@ -171,293 +213,240 @@
         }
 
         .error-message {
-            background: #fff3cd;
-            color: #856404;
+            background: #ffe5e5;
+            color: #DC3545;
             padding: 15px 20px;
             border-radius: 5px;
             margin-bottom: 20px;
             font-size: 14px;
-            border-left: 4px solid #ffc107;
+            display: none;
+            border-left: 4px solid #DC3545;
         }
 
-        .retry-info {
-            background: #e7f3ff;
-            color: #004085;
-            padding: 15px 20px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            border-left: 4px solid #007bff;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 60px 20px;
-            font-size: 18px;
-            color: #666;
-        }
-
-        .booking-info {
-            background: #e3f2fd;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            text-align: left;
-        }
-
-        .booking-info h3 {
-            color: #1976d2;
-            margin-bottom: 15px;
-            font-size: 18px;
-        }
-
-        .booking-detail {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-            font-size: 14px;
-            color: #555;
+        .error-message.show {
+            display: block;
         }
     </style>
 </head>
+
 <body>
     <div class="page-wrapper">
-        <div class="result-card" id="resultCard">
-            <div class="loading">Processing your payment...</div>
+        <div class="payment-card">
+            <div class="card-heading">
+                <h2>Secure Checkout</h2>
+                <p>Complete your payment details</p>
+            </div>
+            <div class="card-body">
+                <!-- Order Summary -->
+                <div class="order-summary">
+                    <h3>Order Summary</h3>
+                    <div class="order-item">
+                        <span>Consultation Service</span>
+                        <span>$99.00</span>
+                    </div>
+                    <div class="order-item">
+                        <span>Service Fee</span>
+                        <span>$5.00</span>
+                    </div>
+                    <div class="order-item">
+                        <span>Total Amount</span>
+                        <span>$104.00</span>
+                    </div>
+                </div>
+
+                <!-- Secure Badge -->
+                <div class="secure-badge">
+                    Your payment information is encrypted and secure
+                </div>
+
+                <!-- Error Message -->
+                <div class="error-message" id="errorMessage"></div>
+
+                <!-- Payment Form -->
+                <form id="paymentForm">
+                    <div class="input-group-desc">
+                        <label class="label">Cardholder Name</label>
+                        <input class="input--style-5" type="text" id="cardholderName"
+                            placeholder="Enter name on card" required>
+                    </div>
+
+                    <div class="input-group-desc">
+                        <label class="label">Card Number</label>
+                        <div class="card-icons">
+                            <div class="card-icon">VISA</div>
+                            <div class="card-icon">MC</div>
+                            <div class="card-icon">AMEX</div>
+                        </div>
+                        <input class="input--style-5" type="text" id="cardNumber"
+                            placeholder="1234 5678 9012 3456" maxlength="19" required>
+                    </div>
+
+                    <div class="input-row">
+                        <div class="input-group-desc">
+                            <label class="label">Expiry Date</label>
+                            <input class="input--style-5" type="text" id="expiryDate"
+                                placeholder="MM/YY" maxlength="5" required>
+                        </div>
+                        <div class="input-group-desc">
+                            <label class="label">CVV</label>
+                            <input class="input--style-5" type="text" id="cvv"
+                                placeholder="123" maxlength="4" required>
+                        </div>
+                    </div>
+
+                    <div class="input-group-desc">
+                        <label class="label">Billing Address</label>
+                        <input class="input--style-5" type="text" id="billingAddress"
+                            placeholder="Enter your billing address" required>
+                    </div>
+
+                    <div class="input-group-desc">
+                        <label class="label">ZIP / Postal Code</label>
+                        <input class="input--style-5" type="text" id="zipCode"
+                            placeholder="Enter ZIP code" required>
+                    </div>
+
+                    <button type="submit" class="btn" id="paymentBtn">
+                        Complete Payment - $104.00
+                    </button>
+                </form>
+
+                <p class="disclaimer">
+                    ** This is a simulated payment system for educational purposes only **<br>
+                    No real charges will be made
+                </p>
+            </div>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
-        import { getFirestore, doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBsmjQbvCZl2vnuKcojBnzYNh7n9kx37W4",
-            authDomain: "consultway-51e30.firebaseapp.com",
-            projectId: "consultway-51e30",
-            storageBucket: "consultway-51e30.firebasestorage.app",
-            messagingSenderId: "289447780270",
-            appId: "1:289447780270:web:f9e64d963e2ef5bb00b23f",
-            measurementId: "G-DWMBZJKKXS"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        window.auth = auth;
-        window.db = db;
-        window.firestore = { doc, getDoc, updateDoc };
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                await processPayment();
-            } else {
-                window.location.href = 'auth.html';
-            }
-        });
-    </script>
-
     <script>
-        async function processPayment() {
-            const paymentResult = JSON.parse(sessionStorage.getItem('paymentResult'));
-            const bookingId = sessionStorage.getItem('currentBookingId');
-            const bookingDataStr = sessionStorage.getItem('bookingData');
+        // Format card number with spaces
+        document.getElementById('cardNumber').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
 
-            // If no payment result, redirect
-            if (!paymentResult) {
-                window.location.href = 'payment_form.html';
+        // Format expiry date
+        document.getElementById('expiryDate').addEventListener('input', function (e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.slice(0, 2) + '/' + value.slice(2, 4);
+            }
+            e.target.value = value;
+        });
+
+        // Only allow numbers in CVV
+        document.getElementById('cvv').addEventListener('input', function (e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+
+        // Show error message
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+        }
+
+        // Handle form submission
+        document.getElementById('paymentForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+            const expiryDate = document.getElementById('expiryDate').value;
+            const cvv = document.getElementById('cvv').value;
+            const btn = document.getElementById('paymentBtn');
+
+            // Simple validation
+            if (cardNumber.length < 13) {
+                showError('Please enter a valid card number');
                 return;
             }
 
-            const resultCard = document.getElementById('resultCard');
-            let bookingData = null;
-
-            // Parse booking data
-            if (bookingDataStr) {
-                bookingData = JSON.parse(bookingDataStr);
+            if (!expiryDate.includes('/') || expiryDate.length !== 5) {
+                showError('Please enter expiry date in MM/YY format');
+                return;
             }
 
-            // Update Firebase if payment was successful
-            if (paymentResult.success && bookingId && window.db) {
-                try {
-                    const bookingRef = window.firestore.doc(window.db, 'bookings', bookingId);
-                    
-                    // Check if booking exists
-                    const bookingDoc = await window.firestore.getDoc(bookingRef);
-                    
-                    if (bookingDoc.exists()) {
-                        // Update booking status
-                        await window.firestore.updateDoc(bookingRef, {
-                            paymentStatus: 'paid',
-                            status: 'confirmed',
-                            paidAt: new Date().toISOString(),
-                            transactionId: paymentResult.transactionId
-                        });
-                        
-                        console.log('Booking updated successfully');
-                        
-                        // Get updated booking data
-                        bookingData = bookingDoc.data();
-                    }
-                } catch (error) {
-                    console.error('Error updating booking:', error);
-                }
+            if (cvv.length < 3) {
+                showError('Please enter a valid CVV');
+                return;
             }
 
-            // Display result
-            if (paymentResult.success) {
-                displaySuccess(paymentResult, bookingData, bookingId);
-            } else {
-                displayFailure(paymentResult, bookingData, bookingId);
-            }
+            // Disable button and show processing
+            btn.disabled = true;
+            btn.textContent = 'Processing Payment...';
 
-            // Clear session after short delay
-            setTimeout(() => {
-                sessionStorage.removeItem('paymentResult');
-            }, 2000);
+            // Simulate payment processing
+            // Simulate payment processing
+    setTimeout(() => {
+        // Randomly determine success (80% success rate for demo)
+        const isSuccessful = Math.random() > 0.2;
+
+        // Store payment result and redirect
+        const paymentData = {
+            success: isSuccessful,
+            amount: '$104.00',
+            transactionId: 'TXN' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+            date: new Date().toLocaleString(),
+            cardLast4: cardNumber.slice(-4)
+        };
+
+        // Store in sessionStorage
+        sessionStorage.setItem('paymentResult', JSON.stringify(paymentData));
+        
+        // ⭐ ADD THIS - Keep booking ID in session ⭐
+        const bookingId = sessionStorage.getItem('currentBookingId');
+        if (bookingId) {
+            sessionStorage.setItem('currentBookingId', bookingId);
+            console.log('Keeping booking ID for payment result:', bookingId);
         }
 
-        function displaySuccess(paymentResult, bookingData, bookingId) {
-            const resultCard = document.getElementById('resultCard');
-            
-            resultCard.innerHTML = `
-                <div class="result-header success">
-                    <div class="icon-wrapper">✓</div>
-                    <h1>Payment Successful!</h1>
-                    <p class="subtitle">
-                        Your consultation has been confirmed.<br>
-                        Thank you for your payment!
-                    </p>
-                </div>
-                <div class="result-body">
-                    ${bookingData ? `
-                        <div class="booking-info">
-                            <h3>📅 Your Booking Details</h3>
-                            <div class="booking-detail">
-                                <strong>Consultant:</strong> ${bookingData.consultantName}
-                            </div>
-                            <div class="booking-detail">
-                                <strong>Date:</strong> ${formatDate(bookingData.date)}
-                            </div>
-                            <div class="booking-detail">
-                                <strong>Time:</strong> ${bookingData.timeSlot}
-                            </div>
-                            ${bookingId ? `
-                                <div class="booking-detail">
-                                    <strong>Booking ID:</strong> ${bookingId.substring(0, 12).toUpperCase()}
-                                </div>
-                            ` : ''}
-                        </div>
-                    ` : ''}
-                    
-                    <div class="transaction-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Transaction ID:</span>
-                            <span class="detail-value">${paymentResult.transactionId}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Amount Paid:</span>
-                            <span class="detail-value">${paymentResult.amount}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Payment Method:</span>
-                            <span class="detail-value">Card ending in ${paymentResult.cardLast4}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Date & Time:</span>
-                            <span class="detail-value">${paymentResult.date}</span>
-                        </div>
-                    </div>
-                    
-                    <a href="dashboard.html" class="btn btn-primary">View My Bookings</a>
-                    <a href="index.html" class="btn btn-secondary">Back to Home</a>
-                    
-                    <p class="disclaimer">
-                        ** This is a simulated payment for educational purposes **<br>
-                        A confirmation has been saved to your account
-                    </p>
-                </div>
-            `;
-        }
-
-        function displayFailure(paymentResult, bookingData, bookingId) {
-            const resultCard = document.getElementById('resultCard');
-            
-            resultCard.innerHTML = `
-                <div class="result-header failed">
-                    <div class="icon-wrapper">✕</div>
-                    <h1>Payment Failed</h1>
-                    <p class="subtitle">
-                        We were unable to process your payment.<br>
-                        Please check your details and try again.
-                    </p>
-                </div>
-                <div class="result-body">
-                    <div class="error-message">
-                        <strong>Common reasons for payment failure:</strong><br>
-                        • Insufficient funds in account<br>
-                        • Incorrect card details<br>
-                        • Card expired or blocked<br>
-                        • Bank declined the transaction
-                    </div>
-
-                    ${bookingData ? `
-                        <div class="booking-info">
-                            <h3>📅 Booking Details</h3>
-                            <div class="booking-detail">
-                                <strong>Consultant:</strong> ${bookingData.consultantName}
-                            </div>
-                            <div class="booking-detail">
-                                <strong>Date:</strong> ${formatDate(bookingData.date)}
-                            </div>
-                            <div class="booking-detail">
-                                <strong>Time:</strong> ${bookingData.timeSlot}
-                            </div>
-                        </div>
-                    ` : ''}
-
-                    <div class="transaction-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Transaction ID:</span>
-                            <span class="detail-value">${paymentResult.transactionId}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Attempted Amount:</span>
-                            <span class="detail-value">${paymentResult.amount}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span class="detail-label">Date & Time:</span>
-                            <span class="detail-value">${paymentResult.date}</span>
-                        </div>
-                    </div>
-
-                    <div class="retry-info">
-                        💡 <strong>Tip:</strong> Please verify your card details and ensure you have sufficient funds before trying again.
-                    </div>
-                    
-                    <a href="payment_form.html" class="btn btn-primary">Try Again</a>
-                    <a href="booking.html" class="btn btn-secondary">Back to Booking</a>
-                    
-                    <p class="disclaimer">
-                        ** This is a simulated payment for educational purposes **<br>
-                        If you continue to experience issues, please contact support
-                    </p>
-                </div>
-            `;
-        }
-
-        function formatDate(dateStr) {
-            const date = new Date(dateStr + 'T00:00:00');
-            return date.toLocaleDateString('en-US', {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-        }
+        // Redirect to result page
+        window.location.href = 'payment_result.html';
+    }, 2000);
+        });
     </script>
+    <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBsmjQbvCZl2vnuKcojBnzYNh7n9kx37W4",
+        authDomain: "consultway-51e30.firebaseapp.com",
+        projectId: "consultway-51e30",
+        storageBucket: "consultway-51e30.firebasestorage.app",
+        messagingSenderId: "289447780270",
+        appId: "1:289447780270:web:f9e64d963e2ef5bb00b23f",
+        measurementId: "G-DWMBZJKKXS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    window.auth = auth;
+
+    // Check authentication
+    onAuthStateChanged(auth, (user) => {
+        if (!user) {
+            window.location.href = 'auth.html';
+        }
+    });
+</script>
+
+<script>
+    // Get booking ID from URL or session
+    const urlParams = new URLSearchParams(window.location.search);
+    const bookingId = urlParams.get('booking') || sessionStorage.getItem('currentBookingId');
+    
+    if (bookingId) {
+        sessionStorage.setItem('currentBookingId', bookingId);
+        console.log('Booking ID:', bookingId);
+    }
+
+    // Rest of your existing script code...
+    // (Keep all your existing code for card formatting, validation, etc.)
+</script>
 </body>
+
 </html>
