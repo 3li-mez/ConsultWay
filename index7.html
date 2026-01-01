@@ -172,7 +172,7 @@
 
               </div>
               <button type="button" class="btn btn-outline-dark btn-edit"
-                onclick="location.href='booking_timeslot.html?consultant=samer-mezher'">Book
+                onclick="goToBooking('samer-mezher')">Book
                 Now</button>
 
             </figcaption>
@@ -190,7 +190,7 @@
 
               </div>
               <button type="button" class="btn btn-outline-dark btn-edit"
-                onclick="location.href='booking_timeslot.html?consultant=mohd-ahmed'">Book
+                onclick="goToBooking('mohd-ahmed')">Book
                 Now</button>
 
             </figcaption>
@@ -208,7 +208,7 @@
 
               </div>
               <button type="button" class="btn btn-outline-dark btn-edit"
-                onclick="location.href='booking_timeslot.html?consultant=ali-al-mawla'">Book
+                onclick="goToBooking('ali-al-mawla')">Book
                 Now</button>
 
             </figcaption>
@@ -225,7 +225,7 @@
 
               </div>
               <button type="button" class="btn btn-outline-dark btn-edit"
-                onclick="location.href='booking_timeslot.html?consultant=fatmaa-mohd'">Book
+                onclick="goToBooking('fatmaa-mohd')">Book
                 Now</button>
 
             </figcaption>
@@ -312,10 +312,25 @@
   <!-- End -->
 
   <script src="script7.js"></script>
+  <script>
+function goToBooking(consultantId) {
+  const user = window.auth?.currentUser;
+
+  if (user) {
+    // already logged in → go straight to booking
+    window.location.href = `booking_timeslot.html?consultant=${consultantId}`;
+  } else {
+    // not logged in → go to login with return info
+    window.location.href =
+      `login_register_modal.html?redirect=booking_timeslot.html&consultant=${consultantId}`;
+  }
+}
+</script>
 </body>
 
 
 </html>
+
 
 
 
