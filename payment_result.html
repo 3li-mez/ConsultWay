@@ -194,7 +194,72 @@
             <!-- Content will be dynamically inserted here -->
         </div>
     </div>
+    <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+    import { getFirestore, doc, updateDoc, getDoc } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
 
+    const firebaseConfig = {
+        apiKey: "AIzaSyBsmjQbvCZl2vnuKcojBnzYNh7n9kx37W4",
+        authDomain: "consultway-51e30.firebaseapp.com",
+        projectId: "consultway-51e30",
+        storageBucket: "consultway-51e30.firebasestorage.app",
+        messagingSenderId: "289447780270",
+        appId: "1:289447780270:web:f9e64d963e2ef5bb00b23f",
+        measurementId: "G-DWMBZJKKXS"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    window.auth = auth;
+    window.db = db;
+    window.firestore = { doc, updateDoc, getDoc };
+
+    // Wait for auth and then update booking
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            await updateBookingInFirebase();
+        } else {
+            window.location.href = 'auth.html';
+        }
+    });
+
+    async function updateBookingInFirebase() {
+        const paymentResult = JSON.parse(sessionStorage.getItem('paymentResult'));
+        const bookingId = sessionStorage.getItem('currentBookingId');
+
+        console.log('Payment Result:', paymentResult);
+        console.log('Booking ID:', bookingId);
+
+        // Update Firebase if payment was successful and we have a booking ID
+        if (paymentResult && paymentResult.success && bookingId) {
+            try {
+                const bookingRef = window.firestore.doc(window.db, 'bookings', bookingId);
+                
+                // Check if booking exists
+                const bookingDoc = await window.firestore.getDoc(bookingRef);
+                
+                if (bookingDoc.exists()) {
+                    // Update booking status
+                    await window.firestore.updateDoc(bookingRef, {
+                        paymentStatus: 'paid',
+                        status: 'confirmed',
+                        paidAt: new Date().toISOString(),
+                        transactionId: paymentResult.transactionId
+                    });
+                    
+                    console.log('✅ Booking updated successfully in Firebase');
+                } else {
+                    console.error('❌ Booking not found:', bookingId);
+                }
+            } catch (error) {
+                console.error('❌ Error updating booking:', error);
+            }
+        }
+    }
+</script>
     <script>
         // Get payment result from sessionStorage
         const paymentResult = JSON.parse(sessionStorage.getItem('paymentResult'));
