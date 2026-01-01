@@ -29,14 +29,21 @@
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  function loadVideoSdkAndJoin(meetingId, displayName) {
+  function normalizeTimeSlotId(slot) {
+    // "03:00 PM" -> "0300PM"
+    return slot.replace(":", "").replace(" ", "");
+  }
+
+  function joinVideoSdk(meetingId, displayName) {
+    console.log("✅ Joining meeting:", meetingId);
+
     const script = document.createElement("script");
     script.type = "text/javascript";
 
     script.addEventListener("load", function () {
       const config = {
         name: displayName || "User",
-        meetingId: meetingId, // ✅ FROM FIREBASE
+        meetingId: meetingId,
         apiKey: "f08127bf-5f8f-4e17-9279-4716d76081aa",
 
         containerId: null,
@@ -59,65 +66,54 @@
     document.head.appendChild(script);
   }
 
-  async function startFromBooking(user) {
+  async function startCall(user) {
     const params = new URLSearchParams(window.location.search);
     const bookingId = params.get("booking");
 
+    console.log("bookingId from URL:", bookingId);
+    console.log("current URL:", window.location.href);
+
     if (!bookingId) {
-      alert("Missing booking id.");
-      window.location.href = "index.html";
+      alert("Missing booking id in URL");
       return;
     }
 
-    // ✅ Read booking from Firestore
     const snap = await getDoc(doc(db, "bookings", bookingId));
     if (!snap.exists()) {
-      alert("Booking not found.");
-      window.location.href = "index.html";
+      alert("Booking not found in Firestore");
       return;
     }
 
     const booking = snap.data();
-    // ✅ If meetingId is missing, generate it from booking data
-let meetingId = booking.meetingId;
 
-if (!meetingId) {
-  const timeKey = booking.timeSlot.replace(":", "").replace(" ", ""); // "03:00 PM" -> "0300PM"
-  meetingId = `cw_${booking.consultantId}_${booking.date}_${timeKey}`;
-  console.log("Generated meetingId:", meetingId);
-}
-
-
-    // ✅ IMPORTANT: meetingId must exist in booking doc
-    const meetingId = booking.meetingId;
+    // ✅ Use meetingId if exists, otherwise generate it (so old bookings work)
+    let meetingId = booking.meetingId;
     if (!meetingId) {
-      alert("This booking has no meetingId. Please re-book after updating code.");
-      window.location.href = "index.html";
-      return;
+      const timeKey = normalizeTimeSlotId(booking.timeSlot);
+      meetingId = `cw_${booking.consultantId}_${booking.date}_${timeKey}`;
+      console.log("Generated meetingId (missing in DB):", meetingId);
+    } else {
+      console.log("meetingId from DB:", meetingId);
     }
 
-    console.log("✅ Joining meeting from booking:", meetingId, "booking:", bookingId);
-
-    // Optional: show consultant/user name
-    const displayName = user.email || "User";
-
-    loadVideoSdkAndJoin(meetingId, displayName);
+    joinVideoSdk(meetingId, user.email);
   }
 
-  // Wait for auth first (since your site requires login)
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
-      window.location.href = "auth.html";
+      window.location.href = "../auth.html"; // video folder -> go back one level
       return;
     }
-    await startFromBooking(user);
+    await startCall(user);
   });
 </script>
+
 
 </body>
 
 
 </html>
+
 
 
 
