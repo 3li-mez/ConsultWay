@@ -567,7 +567,7 @@
                     
                     <div class="booking-actions">
                         ${canJoin && booking.status === 'confirmed' ? `
-                            <button class="btn btn-primary" onclick="joinCall('${booking.id}')">
+                            <button class="btn btn-primary" onclick="joinCall('${booking.id}', '${booking.meetingId}')">
                                 Join Video Call
                             </button>
                         ` : isPast ? `
@@ -592,9 +592,10 @@
         }
 
         // Join video call
-        function joinCall(bookingId) {
+        function joinCall(bookingId, meetingId) {
             // Redirect to video call page with booking ID
-            window.location.href = `./video/video.html?booking=${bookingId}`;
+              window.location.href = `video/video.html?booking=${bookingId}&meeting=${encodeURIComponent(meetingId)}`;
+
         }
 
         // Cancel booking
