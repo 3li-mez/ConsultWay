@@ -10,44 +10,51 @@
 </head>
 
 <body>
-  <script>
-    var script = document.createElement("script");
-    script.type = "text/javascript";
+ <script>
+  // 1) Get meetingId from URL (sent by dashboard)
+  const params = new URLSearchParams(window.location.search);
+  const meetingFromUrl = params.get("meeting");
+  const bookingFromUrl = params.get("booking"); // optional, for debugging
 
-    script.addEventListener("load", function (event) {
-      const config = {
-        name: "Demo User",
-        meetingId: "milkyway",
-        apiKey: "f08127bf-5f8f-4e17-9279-4716d76081aa",
+  // Fallback (only for safety): if meeting missing, use a default room
+  const meetingId = meetingFromUrl || "milkyway";
 
-        containerId: null,
+  console.log("Joining meeting:", meetingId, "booking:", bookingFromUrl);
 
-        micEnabled: true,
-        webcamEnabled: true,
-        participantCanToggleSelfWebcam: true,
-        participantCanToggleSelfMic: true,
+  var script = document.createElement("script");
+  script.type = "text/javascript";
 
-        chatEnabled: true,
-        screenShareEnabled: true,
+  script.addEventListener("load", function () {
+    const config = {
+      name: "Demo User",
+      meetingId: meetingId, // ✅ dynamic now
+      apiKey: "f08127bf-5f8f-4e17-9279-4716d76081aa",
 
-        participantCanLeave: true,
-        redirectOnLeave: "https://3li-mez.github.io/ConsultWay/index4.html",
-        /*
-  
-       Other Feature Properties
-        
-        */
-      };
+      containerId: null,
 
-      const meeting = new VideoSDKMeeting();
-      meeting.init(config);
-    });
+      micEnabled: true,
+      webcamEnabled: true,
+      participantCanToggleSelfWebcam: true,
+      participantCanToggleSelfMic: true,
 
-    script.src =
-      "https://sdk.videosdk.live/rtc-js-prebuilt/0.3.43/rtc-js-prebuilt.js";
-    document.getElementsByTagName("head")[0].appendChild(script);
-  </script>
+      chatEnabled: true,
+      screenShareEnabled: true,
+
+      participantCanLeave: true,
+      redirectOnLeave: "https://3li-mez.github.io/ConsultWay/index4.html",
+    };
+
+    const meeting = new VideoSDKMeeting();
+    meeting.init(config);
+  });
+
+  script.src =
+    "https://sdk.videosdk.live/rtc-js-prebuilt/0.3.43/rtc-js-prebuilt.js";
+  document.getElementsByTagName("head")[0].appendChild(script);
+</script>
+
 </body>
 
 
 </html>
+
