@@ -335,11 +335,11 @@
                 
                 if (bookingDoc.exists()) {
                     const booking = bookingDoc.data();
-                    document.getElementById('consultantName').textContent = booking.consultantName;
-                    document.getElementById('consultantType').textContent = booking.consultantType || 'Consultant';
+                    
+                    
                     
                     const initials = booking.consultantName.split(' ').map(n => n[0]).join('');
-                    document.getElementById('consultantAvatar').textContent = initials;
+                    
                     
                     window.consultantId = booking.consultantId;
                     window.bookingDataLoaded = true;
