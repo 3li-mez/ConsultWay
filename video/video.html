@@ -18,6 +18,7 @@
 
   // Fallback (only for safety): if meeting missing, use a default room
   const meetingId = meetingFromUrl || "milkyway";
+   const name = params.get("name") || "User";
 
   console.log("Joining meeting:", meetingId, "booking:", bookingFromUrl);
 
@@ -26,7 +27,7 @@
 
   script.addEventListener("load", function () {
     const config = {
-      name: "Demo User",
+      name: name,
       meetingId: meetingId, // ✅ dynamic now
       apiKey: "f08127bf-5f8f-4e17-9279-4716d76081aa",
 
@@ -57,4 +58,5 @@
 
 
 </html>
+
 
