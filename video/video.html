@@ -10,53 +10,105 @@
 </head>
 
 <body>
- <script>
-  // 1) Get meetingId from URL (sent by dashboard)
-  const params = new URLSearchParams(window.location.search);
-  const meetingFromUrl = params.get("meeting");
-  const bookingFromUrl = params.get("booking"); // optional, for debugging
+ <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-  // Fallback (only for safety): if meeting missing, use a default room
-  const meetingId = meetingFromUrl || "milkyway";
-   const name = params.get("name") || "User";
+  const firebaseConfig = {
+    apiKey: "AIzaSyBsmjQbvCZl2vnuKcojBnzYNh7n9kx37W4",
+    authDomain: "consultway-51e30.firebaseapp.com",
+    projectId: "consultway-51e30",
+    storageBucket: "consultway-51e30.firebasestorage.app",
+    messagingSenderId: "289447780270",
+    appId: "1:289447780270:web:f9e64d963e2ef5bb00b23f",
+    measurementId: "G-DWMBZJKKXS"
+  };
 
-  console.log("Joining meeting:", meetingId, "booking:", bookingFromUrl);
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
 
-  var script = document.createElement("script");
-  script.type = "text/javascript";
+  function loadVideoSdkAndJoin(meetingId, displayName) {
+    const script = document.createElement("script");
+    script.type = "text/javascript";
 
-  script.addEventListener("load", function () {
-    const config = {
-      name: name,
-      meetingId: meetingId, // ✅ dynamic now
-      apiKey: "f08127bf-5f8f-4e17-9279-4716d76081aa",
+    script.addEventListener("load", function () {
+      const config = {
+        name: displayName || "User",
+        meetingId: meetingId, // ✅ FROM FIREBASE
+        apiKey: "f08127bf-5f8f-4e17-9279-4716d76081aa",
 
-      containerId: null,
+        containerId: null,
+        micEnabled: true,
+        webcamEnabled: true,
+        participantCanToggleSelfWebcam: true,
+        participantCanToggleSelfMic: true,
+        chatEnabled: true,
+        screenShareEnabled: true,
 
-      micEnabled: true,
-      webcamEnabled: true,
-      participantCanToggleSelfWebcam: true,
-      participantCanToggleSelfMic: true,
+        participantCanLeave: true,
+        redirectOnLeave: "https://3li-mez.github.io/ConsultWay/index4.html",
+      };
 
-      chatEnabled: true,
-      screenShareEnabled: true,
+      const meeting = new VideoSDKMeeting();
+      meeting.init(config);
+    });
 
-      participantCanLeave: true,
-      redirectOnLeave: "https://3li-mez.github.io/ConsultWay/index4.html",
-    };
+    script.src = "https://sdk.videosdk.live/rtc-js-prebuilt/0.3.43/rtc-js-prebuilt.js";
+    document.head.appendChild(script);
+  }
 
-    const meeting = new VideoSDKMeeting();
-    meeting.init(config);
+  async function startFromBooking(user) {
+    const params = new URLSearchParams(window.location.search);
+    const bookingId = params.get("booking");
+
+    if (!bookingId) {
+      alert("Missing booking id.");
+      window.location.href = "index.html";
+      return;
+    }
+
+    // ✅ Read booking from Firestore
+    const snap = await getDoc(doc(db, "bookings", bookingId));
+    if (!snap.exists()) {
+      alert("Booking not found.");
+      window.location.href = "index.html";
+      return;
+    }
+
+    const booking = snap.data();
+
+    // ✅ IMPORTANT: meetingId must exist in booking doc
+    const meetingId = booking.meetingId;
+    if (!meetingId) {
+      alert("This booking has no meetingId. Please re-book after updating code.");
+      window.location.href = "index.html";
+      return;
+    }
+
+    console.log("✅ Joining meeting from booking:", meetingId, "booking:", bookingId);
+
+    // Optional: show consultant/user name
+    const displayName = user.email || "User";
+
+    loadVideoSdkAndJoin(meetingId, displayName);
+  }
+
+  // Wait for auth first (since your site requires login)
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      window.location.href = "auth.html";
+      return;
+    }
+    await startFromBooking(user);
   });
-
-  script.src =
-    "https://sdk.videosdk.live/rtc-js-prebuilt/0.3.43/rtc-js-prebuilt.js";
-  document.getElementsByTagName("head")[0].appendChild(script);
 </script>
 
 </body>
 
 
 </html>
+
 
 
