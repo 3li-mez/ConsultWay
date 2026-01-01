@@ -624,7 +624,8 @@ async function proceedToPayment() {
   try {
     const timeKey = normalizeTimeSlotId(selectedTime);
     const lockId = `${consultantId}_${selectedDate}_${timeKey}`;
-      const meetingId = `cw_${consultantId}_${selectedDate}_${normalizeTimeSlotId(selectedTime)}`;
+    const meetingId = `cw_${consultantId}_${selectedDate}_${timeKey}`;
+
 
 
     // references
@@ -659,6 +660,7 @@ async function proceedToPayment() {
         consultantName: consultantData.name,
         date: selectedDate,
         timeSlot: selectedTime,
+          meetingId: meetingId,
         status: "pending",
         paymentStatus: "unpaid",
         lockId,
