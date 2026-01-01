@@ -251,6 +251,17 @@
                     });
                     
                     console.log('✅ Booking updated successfully in Firebase');
+                    // ✅ ALSO confirm the slot lock
+const lockId = bookingDoc.data().lockId;
+
+if (lockId) {
+    const lockRef = window.firestore.doc(window.db, 'slotLocks', lockId);
+    await window.firestore.updateDoc(lockRef, {
+        status: 'confirmed'
+    });
+    console.log('🔒 Slot lock confirmed:', lockId);
+}
+
                 } else {
                     console.error('❌ Booking not found:', bookingId);
                 }
