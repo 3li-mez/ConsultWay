@@ -681,7 +681,7 @@ async function proceedToPayment() {
       // Reload slots to show booked state (we’ll enhance bookedSlots next)
       loadTimeSlots();
     } else {
-      showError("Failed to lock slot. Please try again.");
+      showError(`Failed to lock slot: ${err?.code || err?.message || err}`);
     }
 
     proceedBtn.disabled = false;
