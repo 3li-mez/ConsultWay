@@ -624,6 +624,8 @@ async function proceedToPayment() {
   try {
     const timeKey = normalizeTimeSlotId(selectedTime);
     const lockId = `${consultantId}_${selectedDate}_${timeKey}`;
+      const meetingId = `cw_${consultantId}_${selectedDate}_${normalizeTimeSlotId(selectedTime)}`;
+
 
     // references
     const lockRef = window.fs.doc(window.db, "slotLocks", lockId);
@@ -643,6 +645,7 @@ async function proceedToPayment() {
         consultantId,
         date: selectedDate,
         timeSlot: selectedTime,
+          meetingId, 
         bookingId: bookingRef.id,
         userId: user.uid,
         status: "locked",               // later you can set confirmed after payment if you want
