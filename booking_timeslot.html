@@ -363,6 +363,40 @@
             </div>
         </div>
     </div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBsmjQbvCZl2vnuKcojBnzYNh7n9kx37W4",
+    authDomain: "consultway-51e30.firebaseapp.com",
+    projectId: "consultway-51e30",
+    storageBucket: "consultway-51e30.firebasestorage.app",
+    messagingSenderId: "289447780270",
+    appId: "1:289447780270:web:f9e64d963e2ef5bb00b23f",
+    measurementId: "G-DWMBZJKKXS"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // expose to window so your normal <script> can use it
+  window.auth = auth;
+  window.db = db;
+  window.firestore = { collection, addDoc, serverTimestamp };
+
+  // If not logged in → go auth
+  onAuthStateChanged(auth, (user) => {
+    if (!user) window.location.href = "auth.html";
+  });
+</script>
 
     <script>
         // Available time slots (9 AM - 5 PM)
@@ -529,35 +563,63 @@
         }
 
         // Proceed to payment
-        function proceedToPayment() {
-            if (!selectedDate || !selectedTime) {
-                showError('Please select a date and time slot.');
-                return;
-            }
+        // Proceed to payment (CREATE booking in Firestore first)
+async function proceedToPayment() {
+  if (!selectedDate || !selectedTime) {
+    showError('Please select a date and time slot.');
+    return;
+  }
 
-            const proceedBtn = document.getElementById('proceedBtn');
-            proceedBtn.disabled = true;
-            proceedBtn.textContent = 'Creating Booking...';
+  // Ensure auth ready
+  const user = window.auth?.currentUser;
+  if (!user) {
+    showError("You must be logged in to book.");
+    window.location.href = "auth.html";
+    return;
+  }
 
-            // For now, just go to checkout (Firebase save can be added later)
-            const bookingData = {
-                consultantId: consultantId,
-                consultantName: consultantData.name,
-                date: selectedDate,
-                timeSlot: selectedTime,
-                status: 'pending',
-                paymentStatus: 'unpaid'
-            };
+  const proceedBtn = document.getElementById('proceedBtn');
+  proceedBtn.disabled = true;
+  proceedBtn.textContent = 'Creating Booking...';
 
-            // Store booking info for payment page
-            sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
+  try {
+    // Build booking data
+    const bookingData = {
+      userId: user.uid,
+      consultantId: consultantId,
+      consultantName: consultantData.name,
+      date: selectedDate,
+      timeSlot: selectedTime,
+      status: 'pending',
+      paymentStatus: 'unpaid',
+      createdAt: window.firestore.serverTimestamp()
+    };
 
-            showSuccess('Redirecting to payment...');
+    // ✅ Create document in Firestore: bookings/{autoId}
+    const docRef = await window.firestore.addDoc(
+      window.firestore.collection(window.db, 'bookings'),
+      bookingData
+    );
 
-            setTimeout(() => {
-                window.location.href = 'payment_form.html';
-            }, 1000);
-        }
+    // ✅ store locally for payment_result.html to update
+    sessionStorage.setItem('currentBookingId', docRef.id);
+    sessionStorage.setItem('bookingData', JSON.stringify(bookingData));
+
+    showSuccess('Booking created! Redirecting to payment...');
+
+    // ✅ Go to payment page with booking ID
+    setTimeout(() => {
+      window.location.href = `payment_form.html?booking=${docRef.id}`;
+    }, 800);
+
+  } catch (err) {
+    console.error("❌ Error creating booking:", err);
+    showError("Failed to create booking. Please try again.");
+    proceedBtn.disabled = false;
+    proceedBtn.textContent = 'Proceed to Payment';
+  }
+}
+
 
         // Show messages
         function showError(message) {
